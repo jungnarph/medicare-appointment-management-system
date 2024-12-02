@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #eef2f7;
+        }
+        .container {
+            margin: 50px auto;
+            max-width: 700px;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #4A90E2;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .form-control {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+        }
+        .form-control:focus {
+            border-color: #4A90E2;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+        }
+        .btn-primary {
+            background-color: #4A90E2;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #3A78C8;
+            transform: translateY(-2px);
+        }
+        .custom-alert {
+            align-items: center; /* Aligns items vertically */
+            background-color: #dff0d8; /* Optional: Background color to indicate success */
+            border: 1px solid #d6e9c6; /* Optional: Border to indicate success */
+            color: #3c763d; /* Optional: Text color */
+            border-radius: 8px; /* Optional: Rounded corners */
+            padding: 10px;
+            display: none;
+            transition: 0.5s ease;
+        }
+    </style>
+    <title>Update Patient Information</title>
+</head>
+<body>
+    <div class="container hide">
+        <h1>Update Patient Appointment</h1>
+        <div class="custom-alert mb-2">
+            <p>Patient Appointment Updated Sucessfully <span><a href="index.html"><i class="bi bi-arrow-left"></i>dashboard</a></span></p>
+        </div>
+        <form id="form">
+            <div class="mb-4">
+                <label for="name" class="form-label">name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Employee's name" required>
+            </div>
+            <div class="mb-4">
+                <label for="appointment_type" class="form-label">appointment_type</label>
+                <input type="text" class="form-control" id="appointment_type" name="appointment_type" placeholder="Enter appointment_type" required>
+            </div>
+            <div class="mb-4">
+                <label for="date" class="form-label">date</label>
+                <input type="text" class="form-control" id="date" name="date" placeholder="Enter date" required>
+            </div>
+            <div class="mb-4">
+                <label for="time" class="form-label">time</label>
+                <input type="text" class="form-control" id="time" name="time" placeholder="Enter time" required>
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Update Appointment
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        const name = document.getElementById("name");
+        const appointment_type = document.getElementById("appointment_type");
+        const date = document.getElementById("date");
+        const time = document.getElementById("time");
+        const alertContainer = document.querySelector(".custom-alert");
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const appointmentId = urlParams.get("AppointmentId");
+
+        if (appointmentId) {
+            const apiUrl = 'https://tar771otrf.execute-api.us-east-1.amazonaws.com/prod/Appointments/get-appointmentID';
+
+            // Create the request body with the userId
+            const requestBody = JSON.stringify({ appointmentsId: appointmentId });
+            
+            // Format the body as required
+            const formattedObject = {
+                "body": requestBody
+            };
+
+            console.log(formattedObject); // Log the formatted object
+
+            // Fetch the specific user data using a POST request
+            fetch(apiUrl, {
+                method: "POST", // Use POST method
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formattedObject), // Send the formatted object
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok " + response.statusText);
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then((data) => {
+                // Log the response data to check the structure
+                console.log("API Response:", data);
+
+                // Check for successful data response
+                if (data && data.body) {
+                    const parsedBody = JSON.parse(data.body); // Parse the body field
+
+                    if (parsedBody && parsedBody.data) {
+                        const appointment = parsedBody.data; // Extract user data from "data"
+                        name.value = appointment.name || "";
+                        appointment_type.value = appointment.appointment_type || "";
+                        date.value = appointment.date || "";
+                        time.value = appointment.time || "";
+                        
+                    } else {
+                        console.error("No user data found");
+                        alert("Failed to retrieve user data.");
+                    }
+                } else {
+                    console.error("API response format is unexpected.");
+                    alert("Failed to load user data. Please try again later.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                alert("Failed to load user data. Please try again later.");
+            });
+        } else {
+            alert("No appointmentId provided in the URL.");
+        }
+
+        const updateUrl = "https://tar771otrf.execute-api.us-east-1.amazonaws.com/prod/Appointments/update-appointment";
+        const updateForm = document.querySelector("#form");
+        updateForm.addEventListener("submit", event => {
+            event.preventDefault();
+
+            const formData = {
+                appointmentsId: appointmentId,
+                name: name.value.trim(),
+                appointment_type: appointment_type.value.trim(),
+                date: date.value.trim(),
+                time: time.value.trim()
+            };
+
+            const formattedObject1 = {
+                body: JSON.stringify(formData)
+            };
+
+            console.log(JSON.stringify(formattedObject1));
+
+            fetch(updateUrl, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formattedObject1),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Failed to update patient information.");
+                    } else {
+                        alertContainer.style.display = "flex";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating patient info:", error);
+                    alert("An error occurred while updating information.");
+                });
+        });
+    </script>
+</body>
+</html>

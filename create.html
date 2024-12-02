@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid mobile-nav">
+        <div class="row logo-container align-items-center position-relative">
+            <div class="col-12 text-center text-md-left py-3">
+                <button class="hamburger-button btn" aria-label="Menu" id="toggleSidebar">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <img src="" alt="Logo" class="img-fluid logo-main" style="max-width: 10rem;">
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <main class="main-content">
+        <div class="container d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <h1 class="h2">Create New Appointment</h1>
+            </div>
+        </div>
+    
+        <!-- Additional content goes here -->
+    
+        <div class="container">
+            <form action="" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" id="email" name="age" placeholder="Enter email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" class="form-control" id="age" name="age" placeholder="Enter age" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointment_type">Appointment type</label>
+                    <input type="text" class="form-control" id="appointment_type" name="appointment_type" placeholder="Appointment Type" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" placeholder="Enter date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_time">Starting-time</label>
+                    <input type="time" class="form-control" id="start_time" name="time" placeholder="Enter time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="end_times">End-time</label>
+                    <input type="time" class="form-control" id="end_time" name="time" placeholder="Enter time" required>
+                </div>
+    
+    
+                <div class="form-group row create-form-buttons">
+                    <div class="col">
+                        <a href="index.html" class="btn btn-secondary">Cancel</a>
+                    </div>
+                    <div class="col">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+       document.getElementById('submitBtn').addEventListener('click', (event) => {
+        event.preventDefault()
+    const name = document.getElementById('name').value;
+    const appointment_type = document.getElementById('appointment_type').value;
+    const date = document.getElementById('date').value;
+    const start_time = document.getElementById('start_time').value;
+    const end_time = document.getElementById('end_time').value;
+    const email = document.getElementById('email').value;
+    const age = document.getElementById('age').value;
+
+    // Concatenate start_time and end_time into a single time field
+    const time = `${start_time} - ${end_time}`;
+
+    //post to user management
+
+
+            const jsonObject1 = {
+                username: name,
+                email: email,
+                age: age
+            };
+
+            const formattedObject1 = {
+                body: JSON.stringify(jsonObject1)
+            };
+
+            const jsonString1 = JSON.stringify(formattedObject1);
+            console.log(jsonString1);
+
+            fetch('https://bptby3teb1.execute-api.us-east-1.amazonaws.com/prod/submit-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonString1
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                
+            }})
+
+    // Create the JSON object
+    const jsonObject = {
+        name: name,
+        appointment_type: appointment_type,
+        date: date,
+        time: time // Add concatenated time here
+    };
+
+    const formattedObject = {
+                body: JSON.stringify(jsonObject)
+            };
+
+            const jsonString = JSON.stringify(formattedObject);
+            console.log(jsonString);
+
+            fetch('https://tar771otrf.execute-api.us-east-1.amazonaws.com/prod/Appointments/post-appointment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonString
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                
+            }})
+  
+        });
+    </script>
+</body>
+</html>
